@@ -41,7 +41,14 @@ MainMenu.prototype = {
 }
 
 var Play = function(game){}; //Play state
+
+var current_time;
+var last_spawn_time=0;
+var time_til_spawn=5000;
+var monsters;
+
 Play.prototype = {
+
   init: function() 
   {
     //this.score = 0;
@@ -51,7 +58,6 @@ Play.prototype = {
   create: function()
   {
 
-    
     space = game.add.tileSprite(0, 0, 800, 600, 'background');  //adds the moving background
     
     platform = game.add.tileSprite(0,  500, 800, 500, 'floor'); //adds the moving floor
@@ -66,11 +72,17 @@ Play.prototype = {
     player.body.collideWorldBounds = true; //collision within the boundaries of the game
     
 
-    player.animations.add('forwardSlash', ['Hero0', 'Hero1', 'Hero2', 'Hero3',], 5, false ); //adds the animations
-    player.animations.add('comboSlash', ['Hero3','Hero4', 'Hero5', 'Hero6', 'Hero7' ], 5, false);
+    player.animations.add('forwardSlash', ['Hero0', 'Hero1', 'Hero2', 'Hero3','Hero0'], 5, false ); //adds the animations
+    player.animations.add('comboSlash', ['Hero3','Hero4', 'Hero5', 'Hero6', 'Hero7','Hero0' ], 5, false);
     //player.animations.add('neutral', ['frame6'], 10, false);  // *** NEEDS WALKING ANIMATION ***
 
 
+
+    monsters=game.add.group();
+    monsters.enableBody=true;
+    monsters.physicsBodyType = Phaser.Physics.ARCADE;
+    //let sprite = monsters.create(400,420,'character');
+    //sprite.anchor.setTo(0.5,0.5);
 
   },
 
@@ -81,6 +93,7 @@ Play.prototype = {
   		
 
        game.physics.arcade.collide(player, platform); //check for collision with the ground and player
+       //game.physics.arcade.collide(this.monsters);//monster collision
 
        if(game.input.keyboard.isDown(Phaser.Keyboard.SHIFT))
        {
@@ -106,7 +119,17 @@ Play.prototype = {
        }
 
 
-       //add timer to reset to base Hero0 frame
+       //spawn monsters
+      current_time = game.time.time;
+      if(current_time - last_spawn_time > time_til_spawn){
+        //time_til_spawn = Math.random()*3000 + 2000;  Uncomment this to add random spawn times.
+        last_spawn_time = current_time;
+        let sprite = monsters.create(Math.random()*500 + 50,420,'character');
+      }﻿
+
+
+
+       //add timer to reset to Hero0 frame
       
 
   }
