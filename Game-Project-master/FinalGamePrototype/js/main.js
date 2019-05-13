@@ -19,7 +19,9 @@ MainMenu.prototype = {
   preload: function() //preload all assets here
   {
     
-     game.load.image('background', 'assets/nebula.png');
+     game.load.image('background', 'assets/background1.png');
+     game.load.image('smallZombie', 'assets/zombie.png');
+     game.load.image('fatZombie', 'assets/giant.png');
      game.load.atlas('character', 'assets/prototypeAtlas.png', 'assets/jsonHash.json');
      game.load.image('floor', 'assets/ground.png');
   },
@@ -124,7 +126,13 @@ Play.prototype = {
       if(current_time - last_spawn_time > time_til_spawn){
         //time_til_spawn = Math.random()*3000 + 2000;  Uncomment this to add random spawn times.
         last_spawn_time = current_time;
-        let sprite = monsters.create(Math.random()*500 + 50,420,'character');
+        var rng=Math.random()*10;
+        if(rng<=2){
+          let sprite = monsters.create(Math.random()*800 + 250,380,'fatZombie');
+        }
+        else{
+          let sprite = monsters.create(Math.random()*800 + 250,420,'smallZombie');
+        }
       }﻿
 
 
