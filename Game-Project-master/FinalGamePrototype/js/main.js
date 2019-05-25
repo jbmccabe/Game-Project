@@ -13,6 +13,7 @@ Final Game Prototype
  var slashEffect;
  var hitConfirm;
  var healthBar;
+ var staminaBar;
 
 
 var MainMenu = function(game){}; //Main Menu state
@@ -33,6 +34,8 @@ MainMenu.prototype = {
    game.load.audio('slash','assets/slash.mp3');
    game.load.audio('hitConfirm', 'assets/hitConfirm.mp3');
    game.load.image('hp', 'assets/healthBar.png');
+   game.load.image('stamina', 'assets/staminaBar.png');
+
  },
   create: function() //add text and background color
   {
@@ -56,6 +59,7 @@ MainMenu.prototype = {
 
 var Play = function(game){}; //Play state
 
+var currentStamina = 1; //global variable that stores the stamina for the player
 var currentHealth = 1; //global variable that stores the hp for the player
 var current_time;
 var last_spawn_time=0;
@@ -135,6 +139,7 @@ Play.prototype = {
   hitConfirm = game.add.audio('hitConfirm'); //adds a effect for a hit confirm
 
   healthBar = game.add.sprite(0,0, 'hp');
+  staminaBar = game.add.sprite(500,0,'stamina');
   //healthBarBackground = game.add.sprite(0,0, 'hp'); //create background for healthbar to make max life and loss of life more noticable
 
 },//end create
@@ -234,26 +239,50 @@ update: function(){
     swordBox.destroy();
   }
 
+  if(currentStamina < 1.0)
+  {
+    currentStamina += 0.001;
+    staminaBar.scale.setTo(currentStamina,1);
+  }
+  if(currentStamina > 0.25)
+  {
+
+
   if(game.input.keyboard.isDown(Phaser.Keyboard.SHIFT) && current_time - last_attack_time > player_attack_cooldown){
     player.animations.play('forwardSlash'); //forward slash animation
     slashEffect.play();//play sword sound
+    currentStamina -= 0.25;
+    staminaBar.scale.setTo(currentStamina, 1);
+
     last_attack_time=game.time.time;
   }
   else if(game.input.keyboard.isDown(Phaser.Keyboard.ENTER) && current_time - last_combo_attack_time > player_attack_cooldown){
     player.animations.play('comboSlash');
     slashEffect.play();//play sword sound
     last_combo_attack_time=game.time.time;
+    currentStamina -= 0.25;
+    staminaBar.scale.setTo(currentStamina, 1);
+  }
+
   }
   if(game.input.keyboard.isDown(Phaser.Keyboard.D)){    
     player.body.velocity.x=220;
   }
+
   else if(game.input.keyboard.isDown(Phaser.Keyboard.A)){
     player.body.velocity.x=-280;
   }
+  if(currentStamina >= 0.10)
+  {
+
+
   if(game.input.keyboard.isDown(Phaser.Keyboard.W) && player.body.blocked.down){
     player.body.velocity.y=-1000;
     player.midair=true;
+    currentStamina -= 0.10;
+    staminaBar.scale.setTo(currentStamina, 1);
   }
+}
 
 
 
@@ -322,6 +351,7 @@ GameOver.prototype = {
   },
   update: function() //start game again
   {
+     currentStamina = 1; //reset stamina back to full
      currentHealth = 1; //resets hp back to full
      if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR))
       game.state.start('Play');
